@@ -27,32 +27,31 @@ void Board::MoveDown() {
 }
 
 
-void Board::Mark() {
-	CellValue& current = cells_[current_position_.line][current_position_.column];
+bool Board::Mark(const Position& position) {
+	CellValue& current = cells_[position.line][position.column];
 	if (current != CellValue::kNone) {
-		return;
+		return false;
 	}
+	current_position_ = position;
 	switch (turn_)
 	{
 	case PlayerType::kHuman:
-		cells_[current_position_.line][current_position_.column] = CellValue::kHuman;
-		turn_ = PlayerType::kAI;
+		cells_[position.line][position.column] = CellValue::kHuman;
 		break;
-	case PlayerType::kAI:
-		cells_[current_position_.line][current_position_.column] = CellValue::kAI;
-		turn_ = PlayerType::kHuman;
-		break;
-	default:
+	default: // PlayerType::kAI:
+		cells_[position.line][position.column] = CellValue::kAI;
 		break;
 	}
+	free_cells_.erase(PosToRaw(position));
 
-	CheckWinner(3);
+	CheckWinner(winning_neighbours_);
+	return true;
 }
 
-void Board::CheckWinner(unsigned nb_neighbours) {
+bool Board::CheckWinnerColumn(unsigned nb_neighbours) {
 	const Position& p = current_position_;
 	CellValue c = cells_[p.line][p.column];
-	// Check column
+
 	unsigned n = 1;
 	unsigned index = p.line;
 	while (index > 0) {
@@ -72,11 +71,97 @@ void Board::CheckWinner(unsigned nb_neighbours) {
 			break;
 		}
 	}
+	return (n == nb_neighbours);
+}
+
+bool Board::CheckWinnerLine(unsigned nb_neighbours) {
+	const Position& p = current_position_;
+	CellValue c = cells_[p.line][p.column];
+
+	unsigned n = 1;
+	unsigned index = p.column;
+	while (index > 0) {
+		if (cells_[p.line][--index] == c) {
+			++n;
+		}
+		else {
+			break;
+		}
+	}
+	index = p.column;
+	while (index < width_ - 1) {
+		if (cells_[p.line][++index] == c) {
+			++n;
+		}
+		else {
+			break;
+		}
+	}
+	return (n == nb_neighbours);
+}
+
+bool Board::CheckWinnerDiagonal(unsigned nb_neighbours) {
+	const Position& p = current_position_;
+	CellValue c = cells_[p.line][p.column];
+
+	// Left-Up to Right-Down
+	unsigned n = 1;
+	Position p2 = p;
+	while (p2.line > 0 && p2.column > 0) {
+		if (cells_[--p2.line][--p2.column] == c) {
+			++n;
+		}
+		else {
+			break;
+		}
+	}
+	p2 = p;
+	while (p2.line < height_ - 1 && p2.column < width_ - 1) {
+		if (cells_[++p2.line][++p2.column] == c) {
+			++n;
+		}
+		else {
+			break;
+		}
+	}
 	if (n == nb_neighbours) {
-		// Reverse winner because the turn has already changed
+		return true;
+	}
+
+	// Left-Down to Right-Up
+	n = 1;
+	p2 = p;
+	while (p2.line > 0 && p2.column < width_ - 1) {
+		if (cells_[--p2.line][++p2.column] == c) {
+			++n;
+		}
+		else {
+			break;
+		}
+	}
+	p2 = p;
+	while (p2.line < height_ - 1 && p2.column > 0) {
+		if (cells_[++p2.line][--p2.column] == c) {
+			++n;
+		}
+		else {
+			break;
+		}
+	}
+
+	return (n == nb_neighbours);
+}
+
+void Board::CheckWinner(unsigned nb_neighbours) {
+	if (CheckWinnerColumn(nb_neighbours)
+		|| CheckWinnerLine(nb_neighbours)
+		|| CheckWinnerDiagonal(nb_neighbours)) {
 		winner_ = (turn_ == PlayerType::kHuman)
-			? Winner::kAI
-			: Winner::kHuman;
+			? Winner::kHuman
+			: Winner::kAI;
+	}
+	else if (free_cells_.size() == 0) {
+		winner_ = Winner::kDraw;
 	}
 }
 
@@ -87,8 +172,17 @@ void Board::Reset() {
 	for (size_t i = 0; i < height_; ++i) {
 		for (size_t j = 0; j < width_; ++j) {
 			cells_[i][j] = CellValue::kNone;
+			unsigned raw_pos = i * width_ + j;
+			free_cells_.insert(raw_pos);
 		}
 	}
+	turn_ = PlayerType::kHuman;
+}
+
+void Board::ResetCell(const Position& p) {
+	cells_[p.line][p.column] = CellValue::kNone;
+	free_cells_.insert(PosToRaw(p));
+	winner_ = Winner::kNone;
 }
 
 std::ostream& operator<< (std::ostream& out, const Position& position) {
@@ -136,11 +230,15 @@ void Board::Load(std::istream& f) {
 	unsigned cell_u;
 
 	cells_.resize(height_);
+	free_cells_.clear();
 	for (size_t i = 0; i < height_; ++i) {
 		cells_[i].resize(width_);
-		for (size_t j = 0; j < height_; ++j) {
+		for (size_t j = 0; j < width_; ++j) {
 			f >> cell_u;
 			cells_[i][j] = static_cast<CellValue>(cell_u);
+			if (cells_[i][j] == CellValue::kNone) {
+				free_cells_.insert(i*width_+j);
+			}
 		}
 	}
 }

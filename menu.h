@@ -61,6 +61,5 @@ private:
 	MenuType current_menu_ = MenuType::kMain;
 	MenuType original_menu_ = MenuType::kMain;
 	std::vector<Menu> menus_;
-
 };
 

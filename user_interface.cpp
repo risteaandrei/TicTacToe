@@ -31,9 +31,14 @@ char UserInterface::Convert(CellValue v) const {
 
 void UserInterface::Draw(const Board& board) const {
 	std::cout << color_none_;
-	static const std::string sep = "-------------";
+	std::string sep = "-";
+	for (size_t i = 0; i < board.GetWidth(); ++i) {
+		sep += "----";
+	}
 
 	system("CLS");
+	std::cout << in_game_help_ << std::endl << std::endl;
+
 	std::cout << sep << std::endl;
 	for (size_t i = 0; i < board.GetHeight(); ++i) {
 		std::cout << "| ";
@@ -64,14 +69,30 @@ void UserInterface::Draw(const Board& board) const {
 		}
 	}
 
-	if (board.GetWinner() != Winner::kNone) {
-		std::cout << "Winner: " << as_integer(board.GetWinner()) << std::endl;
+	Winner winner = board.GetWinner();
+	if (winner != Winner::kNone) {
+		switch (winner)
+		{
+		case Winner::kHuman:
+			std::cout << "Congratulations, you won!" << std::endl;
+			break;
+		case Winner::kAI:
+			std::cout << "You got beaten by AI :(" << std::endl;
+			break;
+		case Winner::kDraw:
+			std::cout << "Draw game, nobody won." << std::endl;
+			break;
+		default:
+			break;
+		}
+		std::cout << "Press any key to continue" << std::endl;
 	}
 }
 
 void UserInterface::Draw(const Menu& menu, size_t selected_item) const {
 	system("CLS");
 	std::cout << text_color_;
+	std::cout << menu_help_ << std::endl << std::endl;
 	std::cout << menu.title << std::endl;
 	for (size_t i = 0; i < menu.items.size(); ++i) {
 		if (i == selected_item) {

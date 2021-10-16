@@ -4,6 +4,7 @@
 
 #include <unordered_map>
 
+#include "ai.h"
 #include "input.h"
 #include "menu.h"
 #include "options.h"
@@ -32,6 +33,7 @@ enum class GameState {
 	, kSetXColor
 	, kSetOColor
 	, kExit
+	, kGameEnd
 };
 
 enum class PlayerSide {
@@ -44,20 +46,9 @@ public:
 	Game();
 	void Run();
 private:
-	GameState state_;
-	UserInterface ui_;
-	Input input_;
-	Board board_;
-	Menus menus_;
-	Options options_;
-
-	const std::string save_file_ = "game.save";
-	const std::string options_file_ = "game.options";
-
-	std::unordered_map<GameState, MenuType> game_state_to_menu_type;
-
 	void handlePlayingEvent(UserInput user_input);
 	void handleMenuEvent(UserInput user_input);
+	void handleGameEndEvent();
 	
 	void handleRestart();
 	void handleSave();
@@ -66,9 +57,28 @@ private:
 	void handleAbort();
 	void handleColor();
 	void handleExit();
+	void handlePlayerMove();
 
 	void SaveGame() const;
 	void LoadGame();
 	void SaveOptions() const;
 	void LoadOptions();
+
+	void EndGame();
+
+	const std::string save_file_ = "game.save";
+	const std::string options_file_ = "game.options";
+	const unsigned board_width_ = 4;
+	const unsigned board_height_ = 3;
+	const unsigned winning_neighbours_ = 3;
+
+	GameState state_;
+	UserInterface ui_;
+	Input input_;
+	Board board_;
+	Menus menus_;
+	Options options_;
+	AI ai_;
+
+	std::unordered_map<GameState, MenuType> game_state_to_menu_type;
 };

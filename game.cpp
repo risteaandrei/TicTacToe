@@ -1,19 +1,21 @@
 #include "game.h"
 
+#include <chrono>
 #include <iostream>
 #include <fstream>
+#include <thread>
 
 #include "board.h"
 
 void Game::Run() {
     // Check that all menus are handled
-    // This should be done as static assert
+    // TODO: This should be done as static assert
     if (as_integer(MenuType::Count) != menus_.GetNumberOfMenus()
         || as_integer(MenuType::Count) != game_state_to_menu_type.size()) {
         std::cout << "Error: incomplete implementation" << std::endl;
-        std::cout << "MenuType: " << as_integer(MenuType::Count) << std::endl;
+        std::cout << "Number of MenuType: " << as_integer(MenuType::Count) << std::endl;
         std::cout << "Number of menus: " << menus_.GetNumberOfMenus() << std::endl;
-        std::cout << "Game state to menu map: " << game_state_to_menu_type.size() << std::endl;
+        std::cout << "Number of Game state to menu: " << game_state_to_menu_type.size() << std::endl;
         return;
     }
 
@@ -31,6 +33,9 @@ void Game::Run() {
         case GameState::kPlaying:
             handlePlayingEvent(user_input);
             break;
+        case GameState::kGameEnd:
+            handleGameEndEvent();
+            break;
         default: // all menu events
             handleMenuEvent(user_input);
             break;
@@ -40,7 +45,7 @@ void Game::Run() {
 
 Game::Game()
     : state_(GameState::kMainMenu)
-    , board_(3, 3, PlayerType::kHuman)
+    , board_(board_width_, board_height_, winning_neighbours_, PlayerType::kAI)
 {
     game_state_to_menu_type[GameState::kMainMenu] = MenuType::kMain;
     game_state_to_menu_type[GameState::kInGameMenu] = MenuType::kInGame;
@@ -76,6 +81,10 @@ void Game::LoadOptions() {
     f >> options_;
 }
 
+void Game::EndGame() {
+    state_ = GameState::kGameEnd;
+}
+
 void Game::handlePlayingEvent(UserInput user_input) {
     switch (user_input)
     {
@@ -100,8 +109,9 @@ void Game::handlePlayingEvent(UserInput user_input) {
         break;
 
     case UserInput::SPACE:
-        board_.Mark();
-        ui_.Draw(board_);
+        if (board_.Mark(board_.GetCurrentPosition())) {
+            handlePlayerMove();
+        }
         break;
 
     case UserInput::ESCAPE:
@@ -177,6 +187,13 @@ void Game::handleMenuEvent(UserInput user_input) {
     }
 }
 
+void Game::handleGameEndEvent() {
+    board_.Reset();
+    state_ = GameState::kMainMenu;
+    menus_.SetCurrentMenu(MenuType::kMain);
+    ui_.Draw(menus_.GetCurrentMenu(), menus_.GetSelectedItem());
+}
+
 void Game::handleRestart() {
     board_.Reset();
     state_ = GameState::kPlaying;
@@ -226,4 +243,25 @@ void Game::handleColor() {
 
 void Game::handleExit() {
     SaveOptions();
+}
+
+void Game::handlePlayerMove() {
+    ui_.Draw(board_);
+
+    if (board_.GetWinner() != Winner::kNone) {
+        EndGame();
+    }
+    else {
+        board_.SetTurn(PlayerType::kAI);
+
+        //std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        Position ai_pos = ai_.Compute(board_);
+        board_.Mark(ai_pos);
+        ui_.Draw(board_);
+        if (board_.GetWinner() != Winner::kNone) {
+            EndGame();
+        }
+
+        board_.SetTurn(PlayerType::kHuman);
+    }
 }

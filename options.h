@@ -9,6 +9,12 @@ enum class Color {
 	, kBlue
 };
 
+enum class Difficulty {
+	kEasy
+	, kMedium
+	, kHard
+};
+
 struct Options {
 	Color text_color = Color::kNone;
 	Color x_color = Color::kNone;
