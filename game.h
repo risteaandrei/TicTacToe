@@ -73,8 +73,8 @@ private:
 
 	const std::string save_file_ = "game.save";
 	const std::string options_file_ = "game.options";
-	const unsigned board_width_ = 3;
-	const unsigned board_height_ = 4;
+	const unsigned board_width_ = 4;
+	const unsigned board_height_ = 6;
 	const unsigned winning_neighbours_ = 3;
 
 	GameState state_;

@@ -259,7 +259,9 @@ void Game::handleExit() {
 }
 
 void Game::handlePlayerMove() {
-    ui_.SetAIThinking(true);
+    if (board_.GetNbFreeCells() > 25 / (static_cast<unsigned>(options_.difficulty) + 1)) {
+        ui_.SetAIThinking(true);
+    }
     ui_.Draw(board_);
 
     if (board_.GetWinner() != Winner::kNone) {
