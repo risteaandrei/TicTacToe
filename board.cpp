@@ -42,7 +42,6 @@ bool Board::Mark(const Position& position) {
 		cells_[position.line][position.column] = CellValue::kAI;
 		break;
 	}
-	//free_cells_.erase(PosToRaw(position));
 	--nb_free_cells_;
 
 	CheckWinner(winning_neighbours_);
@@ -174,7 +173,6 @@ void Board::Reset() {
 		for (size_t j = 0; j < width_; ++j) {
 			cells_[i][j] = CellValue::kNone;
 			unsigned raw_pos = i * width_ + j;
-			//free_cells_.insert(raw_pos);
 		}
 	}
 	turn_ = PlayerType::kHuman;
@@ -183,7 +181,6 @@ void Board::Reset() {
 
 void Board::ResetCell(const Position& p) {
 	cells_[p.line][p.column] = CellValue::kNone;
-	//free_cells_.insert(PosToRaw(p));
 	++nb_free_cells_;
 	winner_ = Winner::kNone;
 }
@@ -233,7 +230,6 @@ void Board::Load(std::istream& f) {
 	unsigned cell_u;
 
 	cells_.resize(height_);
-	//free_cells_.clear();
 	nb_free_cells_ = 0;
 	for (size_t i = 0; i < height_; ++i) {
 		cells_[i].resize(width_);
