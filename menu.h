@@ -30,6 +30,8 @@ enum class MenuType {
 	, kTextColor
 	, kXColor
 	, kOColor
+	, kDifficulty
+	// Don't add below Count
 	, Count
 };
 
@@ -52,6 +54,8 @@ public:
 		}
 		selected_item_ = 0;
 	}
+
+	void SetSelectedItem(size_t item) { selected_item_ = item; }
 
 	void MoveUp();
 	void MoveDown();

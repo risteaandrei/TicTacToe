@@ -59,6 +59,7 @@ Game::Game()
     game_state_to_menu_type[GameState::kTextColorMenu] = MenuType::kTextColor;
     game_state_to_menu_type[GameState::kXColorMenu] = MenuType::kXColor;
     game_state_to_menu_type[GameState::kOColorMenu] = MenuType::kOColor;
+    game_state_to_menu_type[GameState::kDifficultyMenu] = MenuType::kDifficulty;
 }
 
 void Game::SaveGame() const {
@@ -78,7 +79,9 @@ void Game::SaveOptions() const {
 
 void Game::LoadOptions() {
     std::ifstream f(options_file_);
-    f >> options_;
+    if (f.good()) {
+        f >> options_;
+    }
 }
 
 void Game::EndGame() {
@@ -166,6 +169,9 @@ void Game::handleMenuEvent(UserInput user_input) {
         case GameState::kExit:
             handleExit();
             break;
+        case GameState::kSetDifficulty:
+            handleDifficulty();
+            break;
         default:
             break;
         }
@@ -176,6 +182,8 @@ void Game::handleMenuEvent(UserInput user_input) {
         else {
             menus_.SetCurrentMenu(game_state_to_menu_type[state_]);
         }
+
+        SetSelectedItem();
 
         if (state_ == GameState::kPlaying) {
             ui_.Draw(board_);
@@ -241,11 +249,17 @@ void Game::handleColor() {
     ui_.Draw(menus_.GetCurrentMenu(), menus_.GetSelectedItem());
 }
 
+void Game::handleDifficulty() {
+    options_.difficulty = static_cast<Difficulty>(menus_.GetSelectedItem());
+    state_ = GameState::kOptionsMenu;
+}
+
 void Game::handleExit() {
     SaveOptions();
 }
 
 void Game::handlePlayerMove() {
+    ui_.SetAIThinking(true);
     ui_.Draw(board_);
 
     if (board_.GetWinner() != Winner::kNone) {
@@ -254,14 +268,34 @@ void Game::handlePlayerMove() {
     else {
         board_.SetTurn(PlayerType::kAI);
 
-        //std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        Position ai_pos = ai_.Compute(board_);
+        Position ai_pos = ai_.Compute(board_, options_.difficulty);
         board_.Mark(ai_pos);
+        ui_.SetAIThinking(false);
         ui_.Draw(board_);
         if (board_.GetWinner() != Winner::kNone) {
             EndGame();
         }
 
         board_.SetTurn(PlayerType::kHuman);
+    }
+}
+
+void Game::SetSelectedItem() {
+    switch (state_)
+    {
+    case GameState::kTextColorMenu:
+        menus_.SetSelectedItem(as_integer(options_.text_color));
+        break;
+    case GameState::kXColorMenu:
+        menus_.SetSelectedItem(as_integer(options_.x_color));
+        break;
+    case GameState::kOColorMenu:
+        menus_.SetSelectedItem(as_integer(options_.o_color));
+        break;
+    case GameState::kDifficultyMenu:
+        menus_.SetSelectedItem(as_integer(options_.difficulty));
+        break;
+    default:
+        break;
     }
 }

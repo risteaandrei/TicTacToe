@@ -47,7 +47,9 @@ public:
     const Position& GetCurrentPosition() const { return current_position_; }
     PlayerType GetTurn() const { return turn_; }
     Winner GetWinner() const { return winner_; }
-    const std::set<unsigned>& GetFreeCells() const { return free_cells_; }
+    bool HasMarkedNeighbors(const Position& p) const;
+    //const std::set<unsigned>& GetFreeCells() const { return free_cells_; }
+    unsigned GetNbFreeCells() const { return nb_free_cells_; }
     Position RawToPos(unsigned pos) const { return { pos / width_, pos % width_ }; }
     unsigned PosToRaw(Position pos) const { return pos.line * width_ + pos.column; }
 
@@ -78,6 +80,7 @@ private:
     Position current_position_;
     Winner winner_;
     Cells cells_;
-    std::set<unsigned> free_cells_;
+    //std::set<unsigned> free_cells_;
+    unsigned nb_free_cells_;
     unsigned winning_neighbours_;
 };

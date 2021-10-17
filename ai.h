@@ -14,15 +14,13 @@ struct Move {
 class AI
 {
 public:
-	Position Compute(const Board& b);
+	Position Compute(const Board& b, Difficulty difficulty);
 
 private:
 	Position ComputeMinimax(const Board& b, unsigned depth);
 	Move Minimax(Board& board, PlayerType player, unsigned depth);
 
-	const unsigned easy_depth_ = 5;
-	const unsigned medium_depth_ = 10;
-	const unsigned hard_depth_ = 15;
-
-	Difficulty difficulty_ = Difficulty::kEasy;
+	const unsigned easy_depth_ = 2;
+	const unsigned medium_depth_ = 3;
+	const unsigned hard_depth_ = 10;
 };

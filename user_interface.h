@@ -15,6 +15,8 @@ public:
 
 	void SetSide(PlayerSide side) { side_ = side; }
 	void UpdateColors(const Options& options);
+
+	void SetAIThinking(bool is_thinking) { ai_thinking_ = is_thinking; }
 private:
 	char Convert(CellValue v) const;
 	const std::string& TranslateColor(Color color) const;
@@ -32,5 +34,7 @@ private:
 	std::string o_color_;
 
 	PlayerSide side_;
+
+	bool ai_thinking_ = false;
 };
 

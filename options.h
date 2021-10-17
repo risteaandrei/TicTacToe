@@ -16,6 +16,7 @@ enum class Difficulty {
 };
 
 struct Options {
+	Difficulty difficulty = Difficulty::kEasy;
 	Color text_color = Color::kNone;
 	Color x_color = Color::kNone;
 	Color o_color = Color::kNone;

@@ -87,6 +87,9 @@ void UserInterface::Draw(const Board& board) const {
 		}
 		std::cout << "Press any key to continue" << std::endl;
 	}
+	else if (ai_thinking_) {
+		std::cout << "AI is thinking, please be patient..." << std::endl;
+	}
 }
 
 void UserInterface::Draw(const Menu& menu, size_t selected_item) const {

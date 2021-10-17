@@ -9,11 +9,8 @@ int main() {
 	c.Run();
 
 	/* TODO
-	* - difficulty config + persistent
-	* - decouple Board from AI to re-use AI
 	* - confirm load game from in-game menu
-	* - board size config + persistent
-	* - first move before game start
+	* - who moves first menu
 	*/
 
 }

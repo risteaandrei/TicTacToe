@@ -42,7 +42,8 @@ bool Board::Mark(const Position& position) {
 		cells_[position.line][position.column] = CellValue::kAI;
 		break;
 	}
-	free_cells_.erase(PosToRaw(position));
+	//free_cells_.erase(PosToRaw(position));
+	--nb_free_cells_;
 
 	CheckWinner(winning_neighbours_);
 	return true;
@@ -160,7 +161,7 @@ void Board::CheckWinner(unsigned nb_neighbours) {
 			? Winner::kHuman
 			: Winner::kAI;
 	}
-	else if (free_cells_.size() == 0) {
+	else if (nb_free_cells_ == 0) {
 		winner_ = Winner::kDraw;
 	}
 }
@@ -173,15 +174,17 @@ void Board::Reset() {
 		for (size_t j = 0; j < width_; ++j) {
 			cells_[i][j] = CellValue::kNone;
 			unsigned raw_pos = i * width_ + j;
-			free_cells_.insert(raw_pos);
+			//free_cells_.insert(raw_pos);
 		}
 	}
 	turn_ = PlayerType::kHuman;
+	nb_free_cells_ = width_ * height_;
 }
 
 void Board::ResetCell(const Position& p) {
 	cells_[p.line][p.column] = CellValue::kNone;
-	free_cells_.insert(PosToRaw(p));
+	//free_cells_.insert(PosToRaw(p));
+	++nb_free_cells_;
 	winner_ = Winner::kNone;
 }
 
@@ -230,15 +233,50 @@ void Board::Load(std::istream& f) {
 	unsigned cell_u;
 
 	cells_.resize(height_);
-	free_cells_.clear();
+	//free_cells_.clear();
+	nb_free_cells_ = 0;
 	for (size_t i = 0; i < height_; ++i) {
 		cells_[i].resize(width_);
 		for (size_t j = 0; j < width_; ++j) {
 			f >> cell_u;
 			cells_[i][j] = static_cast<CellValue>(cell_u);
-			if (cells_[i][j] == CellValue::kNone) {
-				free_cells_.insert(i*width_+j);
-			}
+			nb_free_cells_ += (cells_[i][j] == CellValue::kNone);
 		}
 	}
+}
+
+bool Board::HasMarkedNeighbors(const Position& p) const {
+	if (p.line > 0) {
+		if (cells_[p.line - 1][p.column] != CellValue::kNone) {
+			return true;
+		}
+		if (p.column > 0 && cells_[p.line - 1][p.column - 1] != CellValue::kNone) {
+			return true;
+		}
+		if (p.column < width_ - 1 && cells_[p.line - 1][p.column + 1] != CellValue::kNone) {
+			return true;
+		}
+	}
+
+	if (p.line < height_ - 1) {
+		if (cells_[p.line + 1][p.column] != CellValue::kNone) {
+			return true;
+		}
+		if (p.column > 0 && cells_[p.line + 1][p.column - 1] != CellValue::kNone) {
+			return true;
+		}
+		if (p.column < width_ - 1 && cells_[p.line + 1][p.column + 1] != CellValue::kNone) {
+			return true;
+		}
+	}
+
+	if (p.column > 0 && cells_[p.line][p.column - 1] != CellValue::kNone) {
+		return true;
+	}
+
+	if (p.column < width_ - 1 && cells_[p.line][p.column + 1] != CellValue::kNone) {
+		return true;
+	}
+
+	return false;
 }

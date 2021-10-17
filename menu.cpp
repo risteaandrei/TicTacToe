@@ -79,7 +79,7 @@ Menus::Menus()
 	  , {
 			{ "Options" },
 			{
-				{ "Difficulty", GameState::kOptionsMenu }
+				{ "Difficulty", GameState::kDifficultyMenu }
 			  , { "Colors", GameState::kColorsMenu }
 			  , { "Return to previous menu", GameState::kOriginalMenu }
 			}
@@ -118,6 +118,14 @@ Menus::Menus()
 			  ,	{ "Red", GameState::kSetOColor }
 			  , { "Green", GameState::kSetOColor }
 			  , { "Blue", GameState::kSetOColor }
+			}
+		}
+	  , {
+			{ "Difficulty" },
+			{
+				{ "Easy", GameState::kSetDifficulty }
+			  ,	{ "Medium", GameState::kSetDifficulty }
+			  , { "Hard", GameState::kSetDifficulty }
 			}
 		}
 	}) {}

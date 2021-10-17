@@ -34,6 +34,8 @@ enum class GameState {
 	, kSetOColor
 	, kExit
 	, kGameEnd
+	, kDifficultyMenu
+	, kSetDifficulty
 };
 
 enum class PlayerSide {
@@ -56,6 +58,7 @@ private:
 	void handleSidePick();
 	void handleAbort();
 	void handleColor();
+	void handleDifficulty();
 	void handleExit();
 	void handlePlayerMove();
 
@@ -64,12 +67,14 @@ private:
 	void SaveOptions() const;
 	void LoadOptions();
 
+	void SetSelectedItem();
+
 	void EndGame();
 
 	const std::string save_file_ = "game.save";
 	const std::string options_file_ = "game.options";
-	const unsigned board_width_ = 4;
-	const unsigned board_height_ = 3;
+	const unsigned board_width_ = 3;
+	const unsigned board_height_ = 4;
 	const unsigned winning_neighbours_ = 3;
 
 	GameState state_;
