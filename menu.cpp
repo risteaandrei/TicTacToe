@@ -72,8 +72,8 @@ Menus::Menus()
 	  , {
 			{ "Are you sure you want to abort current game?" },
 			{
-				{ "Yes", GameState::kMainMenu }
-			  , { "No", GameState::kPlaying }
+				{ "Yes", GameState::kAbort }
+			  , { "No", GameState::kInGameMenu }
 			}
 		}
 	  , {

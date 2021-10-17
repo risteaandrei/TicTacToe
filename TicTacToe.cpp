@@ -7,11 +7,4 @@ int main() {
 
 	Game c;
 	c.Run();
-
-	/* TODO
-	* - confirm load game from in-game menu
-	* - who moves first menu
-	* - handle interrupt during AI turn
-	*/
-
 }

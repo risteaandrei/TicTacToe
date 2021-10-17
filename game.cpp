@@ -158,7 +158,7 @@ void Game::handleMenuEvent(UserInput user_input) {
         case GameState::kSetSide:
             handleSidePick();
             break;
-        case GameState::kExitToMainMenu:
+        case GameState::kAbort:
             handleAbort();
             break;
         case GameState::kSetTextColor:
@@ -231,6 +231,7 @@ void Game::handleSidePick() {
 
 void Game::handleAbort() {
     board_.Reset();
+    state_ = GameState::kMainMenu;
 }
 
 void Game::handleColor() {
