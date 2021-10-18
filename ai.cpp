@@ -31,8 +31,8 @@ Move AI::Minimax(Board& board, PlayerType player, unsigned depth) {
 	unsigned height = board.GetHeight();
 	unsigned width  = board.GetWidth();
 
-	for (size_t i = 0; i < height; ++i) {
-		for (size_t j = 0; j < width; ++j) {
+	for (unsigned i = 0; i < height; ++i) {
+		for (unsigned j = 0; j < width; ++j) {
 			Position p = { i, j };
 			if (board.GetCellValue(p) == CellValue::kNone) {
 				// Reduce number of iterations by only checking cells with marked neighbours
