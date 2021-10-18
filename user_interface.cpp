@@ -40,9 +40,9 @@ void UserInterface::Draw(const Board& board) const {
 	std::cout << in_game_help_ << std::endl << std::endl;
 
 	std::cout << sep << std::endl;
-	for (size_t i = 0; i < board.GetHeight(); ++i) {
+	for (unsigned i = 0; i < board.GetHeight(); ++i) {
 		std::cout << "| ";
-		for (size_t j = 0; j < board.GetWidth(); ++j) {
+		for (unsigned j = 0; j < board.GetWidth(); ++j) {
 			char c = Convert(board.GetCellValue({ i, j }));
 			if (c == '0') {
 				std::cout << o_color_;

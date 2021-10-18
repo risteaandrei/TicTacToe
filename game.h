@@ -20,6 +20,7 @@ enum class GameState {
 	, kCheckExistingSavedGame
 	, kConfirmOverwriteMenu
 	, kSaveOverwrite
+	, kSaveConfirmedMenu
 	, kLoad
 	, kSidePickMenu
 	, kSetSide

@@ -169,8 +169,8 @@ void Board::Reset() {
 	current_position_.line = 0;
 	current_position_.column = 0;
 	winner_ = Winner::kNone;
-	for (size_t i = 0; i < height_; ++i) {
-		for (size_t j = 0; j < width_; ++j) {
+	for (unsigned i = 0; i < height_; ++i) {
+		for (unsigned j = 0; j < width_; ++j) {
 			cells_[i][j] = CellValue::kNone;
 			unsigned raw_pos = i * width_ + j;
 		}

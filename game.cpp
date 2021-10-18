@@ -8,17 +8,6 @@
 #include "board.h"
 
 void Game::Run() {
-    // Check that all menus are handled
-    // TODO: This should be done as static assert
-    if (as_integer(MenuType::Count) != menus_.GetNumberOfMenus()
-        || as_integer(MenuType::Count) != game_state_to_menu_type.size()) {
-        std::cout << "Error: incomplete implementation" << std::endl;
-        std::cout << "Number of MenuType: " << as_integer(MenuType::Count) << std::endl;
-        std::cout << "Number of menus: " << menus_.GetNumberOfMenus() << std::endl;
-        std::cout << "Number of Game state to menu: " << game_state_to_menu_type.size() << std::endl;
-        return;
-    }
-
     // Start
     LoadOptions();
     ui_.UpdateColors(options_);
@@ -51,7 +40,8 @@ Game::Game()
     game_state_to_menu_type[GameState::kInGameMenu] = MenuType::kInGame;
     game_state_to_menu_type[GameState::kRestartMenu] = MenuType::kRestart;
     game_state_to_menu_type[GameState::kConfirmOverwriteMenu] = MenuType::kOverwriteSave;
-    game_state_to_menu_type[GameState::kSaveOverwrite] = MenuType::kInGame;
+    game_state_to_menu_type[GameState::kSaveConfirmedMenu] = MenuType::kSaveConfirmed;
+    game_state_to_menu_type[GameState::kSaveOverwrite] = MenuType::kSaveConfirmed;
     game_state_to_menu_type[GameState::kSidePickMenu] = MenuType::kPickASide;
     game_state_to_menu_type[GameState::kExitToMainMenu] = MenuType::kConfirmAbort;
     game_state_to_menu_type[GameState::kOptionsMenu] = MenuType::kOptions;
@@ -211,11 +201,10 @@ void Game::handleSave() {
     std::ifstream file(save_file_);
     if (file.good()) {
         state_ = GameState::kConfirmOverwriteMenu;
-        menus_.SetCurrentMenu(MenuType::kOverwriteSave);
     }
     else {
         SaveGame();
-        menus_.SetCurrentMenu(MenuType::kInGame);
+        state_ = GameState::kSaveConfirmedMenu;
     }
 }
 
