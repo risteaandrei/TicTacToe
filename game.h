@@ -38,6 +38,7 @@ enum class GameState {
 	, kDifficultyMenu
 	, kSetDifficulty
 	, kAbort
+	, kNoSavedGameMenu
 };
 
 enum class PlayerSide {

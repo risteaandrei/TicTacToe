@@ -128,4 +128,10 @@ Menus::Menus()
 			  , { "Hard", GameState::kSetDifficulty }
 			}
 		}
+	  , {
+			{ "No saved game" },
+			{
+				{ "OK", GameState::kOriginalMenu }
+			}
+		}
 	}) {}

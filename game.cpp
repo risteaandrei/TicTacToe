@@ -50,6 +50,7 @@ Game::Game()
     game_state_to_menu_type[GameState::kXColorMenu] = MenuType::kXColor;
     game_state_to_menu_type[GameState::kOColorMenu] = MenuType::kOColor;
     game_state_to_menu_type[GameState::kDifficultyMenu] = MenuType::kDifficulty;
+    game_state_to_menu_type[GameState::kNoSavedGameMenu] = MenuType::kNoSavedGame;
 }
 
 void Game::SaveGame() const {
@@ -209,8 +210,14 @@ void Game::handleSave() {
 }
 
 void Game::handleLoad() {
-    LoadGame();
-    state_ = GameState::kPlaying;
+    std::ifstream file(save_file_);
+    if (file.good()) {
+        LoadGame();
+        state_ = GameState::kPlaying;
+    }
+    else {
+        state_ = GameState::kNoSavedGameMenu;
+    }
 }
 
 void Game::handleSidePick() {

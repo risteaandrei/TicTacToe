@@ -31,8 +31,7 @@ enum class MenuType {
 	, kXColor
 	, kOColor
 	, kDifficulty
-	// Don't add below Count
-	, Count
+	, kNoSavedGame
 };
 
 class Menus {
